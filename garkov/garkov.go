@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/fogleman/gg"
 )
 
-func Garkov() {
+func Garkov() string {
 	comic, err := getComic()
 	if err != nil {
 		panic(err)
@@ -67,8 +68,10 @@ func Garkov() {
 		})
 	})
 
+	os.Mkdir("temp/", 0755)
 	name := randomName(15)
-	base.SavePNG("cache/" + name)
+	base.SavePNG("temp/" + name)
+	return name
 }
 
 func initializeImage() *gg.Context {

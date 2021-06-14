@@ -14,9 +14,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var PREFIX = "--"
+var prefices map[string]string
+
+var DPREFIX = "--"
 
 func Run(token string) {
+	prefices = make(map[string]string)
 	dg, err := discordgo.New("Bot " + token)
 	if err != nil {
 		panic(err)
@@ -44,20 +47,26 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if !strings.HasPrefix(m.Content, PREFIX) {
+	prefix, ok := prefices[m.GuildID]
+	if !ok {
+		prefix = "--"
+	}
+
+	if !strings.HasPrefix(m.Content, prefix) {
 		return
 	}
 
 	s.ChannelTyping(m.ChannelID)
 
-	message := strings.Trim(m.Content, PREFIX+" ")
+	message := strings.Trim(m.Content, prefix+" ")
 	space := regexp.MustCompile(`\s+`)
 	message = space.ReplaceAllString(message, " ")
 	args := strings.Split(message, " ")
 
 	if args[0] == "prefix" {
-		PREFIX = args[1]
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Set prefix to %s", PREFIX))
+		prefices[m.GuildID] = args[1]
+		prefix = args[1]
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Set prefix to %s", prefix))
 		return
 	}
 
@@ -74,7 +83,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if args[0] == "help" {
-		e := embed.NewGenericEmbedAdvanced("Help", "These are the commands\nhelp: show this message\ngarkov: generate an image\nprefix: change prefix. Current is "+PREFIX, 0xa4781c)
+		e := embed.NewGenericEmbedAdvanced("Help", "These are the commands\nhelp: show this message\ngarkov: generate an image\nprefix: change prefix. Current is "+prefix, 0xa4781c)
 		s.ChannelMessageSendEmbed(m.ChannelID, e)
 		return
 	}

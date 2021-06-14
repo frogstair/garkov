@@ -17,7 +17,7 @@ import (
 
 var prefices map[string]string
 
-var DPREFIX = "--"
+var DPREFIX = "-"
 
 func Run(token string) {
 	prefices = make(map[string]string)
@@ -94,7 +94,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		e.Title = "Help support Garkov!"
 		e.Color = 0xa4781c
 		i := new(discordgo.MessageEmbedImage)
-		i.URL = "https://i.imgur.com/moeumSw.png"
+		i.URL = "https://i.imgur.com/JmVbLYe.png"
 		e.Image = i
 		e.Description = "Send a **donation** to my [PayPal](https://paypal.me/frogstair) or scan the QR code"
 		s.ChannelMessageSendEmbed(m.ChannelID, e)

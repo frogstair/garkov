@@ -17,7 +17,7 @@ import (
 
 var prefices map[string]string
 
-var DPREFIX = "--"
+var DPREFIX = "!!"
 
 func Run(token string) {
 	prefices = make(map[string]string)
@@ -50,7 +50,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	prefix, ok := prefices[m.GuildID]
 	if !ok {
-		prefix = "--"
+		prefix = DPREFIX
 	}
 
 	if !strings.HasPrefix(m.Content, prefix) {
@@ -84,7 +84,19 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if args[0] == "help" {
-		e := embed.NewGenericEmbedAdvanced("Help", "These are the commands\nhelp: show this message\ngarkov: generate an image\nprefix: change prefix. Current is "+prefix, 0xa4781c)
+		e := embed.NewGenericEmbedAdvanced("Help", "These are the commands\n__**help**__: show this message\n__**garkov**__: generate an image\n__**prefix**__: change prefix. Current is "+prefix+"\n__**donate**__: send a donation to me!", 0xa4781c)
+		s.ChannelMessageSendEmbed(m.ChannelID, e)
+		return
+	}
+
+	if args[0] == "donate" {
+		e := new(discordgo.MessageEmbed)
+		e.Title = "Help support Garkov!"
+		e.Color = 0xa4781c
+		i := new(discordgo.MessageEmbedImage)
+		i.URL = "https://i.imgur.com/moeumSw.png"
+		e.Image = i
+		e.Description = "Send a **donation** to my [PayPal](https://paypal.me/frogstair) or scan the QR code"
 		s.ChannelMessageSendEmbed(m.ChannelID, e)
 		return
 	}

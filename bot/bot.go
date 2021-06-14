@@ -67,6 +67,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if args[0] == "prefix" {
 		if len(args) == 1 {
 			s.ChannelMessageSend(m.ChannelID, "You need to specify a prefix (e.g. "+prefix+"prefix ?)")
+			return
 		}
 
 		prefices[m.GuildID] = args[1]

@@ -17,7 +17,7 @@ import (
 
 var prefices map[string]string
 
-var DPREFIX = "-"
+var DPREFIX = "--"
 
 func Run(token string) {
 	prefices = make(map[string]string)

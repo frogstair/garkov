@@ -20,7 +20,27 @@ const chlength = 10
 
 func init() {
 	ImageChannel = make(chan string, chlength)
-	os.RemoveAll("cache/")
+	files, err := os.ReadDir("cache/")
+	if err != nil {
+		panic(err)
+	}
+	added := map[string]bool{}
+	i := 0
+	for _, f := range files {
+		if i == chlength {
+			break
+		}
+		added[f.Name()] = true
+		ImageChannel <- f.Name()
+		i++
+	}
+	log.Printf("Added %d files from cache\n", i)
+	for _, f := range files {
+		_, ok := added[f.Name()]
+		if !ok {
+			os.Remove("cache/" + f.Name())
+		}
+	}
 }
 
 func Garkov() string {

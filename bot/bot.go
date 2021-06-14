@@ -65,6 +65,10 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	args := strings.Split(message, " ")
 
 	if args[0] == "prefix" {
+		if len(args) == 1 {
+			s.ChannelMessageSend(m.ChannelID, "You need to specify a prefix (e.g. "+prefix+"prefix ?)")
+		}
+
 		prefices[m.GuildID] = args[1]
 		prefix = args[1]
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Set prefix to %s", prefix))

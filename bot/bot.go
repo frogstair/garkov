@@ -3,6 +3,7 @@ package bot
 import (
 	"fmt"
 	"garkov/garkov"
+	"log"
 	"os"
 	"os/signal"
 	"regexp"
@@ -71,14 +72,14 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if args[0] == "garkov" {
-		path := garkov.Garkov()
-		file, err := os.Open("temp/" + path)
+		path := nextGarkov()
+		file, err := os.Open("cache/" + path)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, "Internal error")
 			panic(err)
 		}
 		s.ChannelFileSend(m.ChannelID, fmt.Sprintf("garkov%d.png", time.Now().Unix()), file)
-		os.Remove("temp/" + path)
+		os.Remove("cache/" + path)
 		return
 	}
 
@@ -90,4 +91,14 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	s.ChannelMessageSend(m.ChannelID, "Unknown command "+fmt.Sprint(args))
 
+}
+
+func nextGarkov() string {
+	for len(garkov.ImageChannel) == 0 {
+		log.Printf("Queue is empty, waiting")
+		time.Sleep(500 * time.Millisecond)
+	}
+	v := <-garkov.ImageChannel
+	log.Printf("Removed item %s", v)
+	return v
 }

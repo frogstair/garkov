@@ -2,6 +2,7 @@ package main
 
 import (
 	"garkov/bot"
+	"garkov/garkov"
 	"os"
 
 	"math/rand"
@@ -15,5 +16,6 @@ func main() {
 
 	godotenv.Load()
 
+	go garkov.GarkovLoop()
 	bot.Run(os.Getenv("BOT_KEY"))
 }

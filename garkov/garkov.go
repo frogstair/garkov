@@ -2,15 +2,26 @@ package garkov
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fogleman/gg"
 )
+
+var ImageChannel chan string
+
+const chlength = 10
+
+func init() {
+	ImageChannel = make(chan string, chlength)
+	os.RemoveAll("cache/")
+}
 
 func Garkov() string {
 	comic, err := getComic()
@@ -68,10 +79,28 @@ func Garkov() string {
 		})
 	})
 
-	os.Mkdir("temp/", 0755)
+	os.Mkdir("cache/", 0755)
 	name := randomName(15)
-	base.SavePNG("temp/" + name)
+	base.SavePNG("cache/" + name)
 	return name
+}
+
+func GarkovLoop() {
+	added := false
+	for {
+		if len(ImageChannel) < chlength {
+			added = true
+			v := Garkov()
+			ImageChannel <- v
+			log.Printf("Added image %s", v)
+			continue
+		}
+		if added {
+			log.Printf("Queue full, waiting...")
+			added = false
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
 }
 
 func initializeImage() *gg.Context {
